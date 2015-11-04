@@ -19,7 +19,7 @@ public class Viewer {
 		openLoginPanel();
 		login(login, password, universe);
 		goToGala();
-		for (int gal = 5; gal >= 1; gal--)
+		for (int gal = 9; gal >= 1; gal--)
 			for (int ss = 499; ss >= 1; ss--) {
 				goToKor(gal, ss);				
 				if (isDarkMater()) {
