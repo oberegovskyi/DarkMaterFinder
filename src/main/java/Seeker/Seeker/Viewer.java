@@ -2,6 +2,7 @@ package Seeker.Seeker;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -21,7 +22,7 @@ public class Viewer {
 		goToGala();
 		for (int gal = 9; gal >= 1; gal--)
 			for (int ss = 499; ss >= 1; ss--) {
-				goToKor(gal, ss);				
+				goToKor(gal, ss);
 				if (isDarkMater()) {
 					Helper.writeToFile(prepareToWrite(gal, ss), resultFile);
 					System.out.println(gal + ":" + ss);
@@ -59,20 +60,24 @@ public class Viewer {
 		WebElement goButton = driver
 				.findElement(By.cssSelector("div.btn_blue"));
 		goButton.click();
-
-		WebDriverWait wait = new WebDriverWait(driver, 2);
-		String element_xpath = ".//*[@id='galaxyLoading' and not(contains(@style,'display: none'))]";
-		wait.until(ExpectedConditions.presenceOfElementLocated(By
-				.xpath(element_xpath)));
-		wait = new WebDriverWait(driver, 2);
-		element_xpath = ".//*[@id='galaxyLoading' and contains(@style,'display: none')]";
-		wait.until(ExpectedConditions.presenceOfElementLocated(By
-				.xpath(element_xpath)));
+		try {
+			WebDriverWait wait = new WebDriverWait(driver, 3);
+			String element_xpath = ".//*[@id='galaxyLoading' and not(contains(@style,'display: none'))]";
+			wait.until(ExpectedConditions.presenceOfElementLocated(By
+					.xpath(element_xpath)));
+			wait = new WebDriverWait(driver, 3);
+			element_xpath = ".//*[@id='galaxyLoading' and contains(@style,'display: none')]";
+			wait.until(ExpectedConditions.presenceOfElementLocated(By
+					.xpath(element_xpath)));
+		} catch (TimeoutException ex) {
+			Helper.writeToFile(prepareToWrite(gal, ss) + ":Error showing",
+					resultFile);
+		}
 	}
+
 	private Boolean isDarkMater() {
 		try {
-			driver.findElement(By
-					.cssSelector("img.float_left"));
+			driver.findElement(By.cssSelector("img.float_left"));
 			return true;
 		} catch (NoSuchElementException ex) {
 			return false;
