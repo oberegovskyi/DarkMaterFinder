@@ -14,20 +14,39 @@ public class Viewer {
 	private static final String gameUrl = "http://ru.ogame.gameforge.com/";
 	private static WebDriver driver = new ChromeDriver();
 	private static final String resultFile = "result.txt";
+	private static final int step = 80;
+	private String login;
+	private String password;
+	private String universe;
 
 	public Viewer(String login, String password, String universe) {
+		this.login = login;
+		this.password = password;
+		this.universe = universe;
+	}
+
+	public void start() {
 		driver.navigate().to(gameUrl);
 		openLoginPanel();
 		login(login, password, universe);
 		goToGala();
-		for (int gal = 9; gal >= 1; gal--)
-			for (int ss = 499; ss >= 1; ss--) {
+		for (int gal = 9; gal >= 1; gal--) {
+			int ss = 499;
+			Boolean foundDM = false;
+			while (ss >= 1) {
 				goToKor(gal, ss);
-				if (isDarkMater()) {
+				if (isDarkMater(foundDM)) {
+					foundDM = true;
 					Helper.writeToFile(prepareToWrite(gal, ss), resultFile);
 					System.out.println(gal + ":" + ss);
 				}
+				if (foundDM) {
+					ss -= step;
+				} else {
+					ss--;
+				}
 			}
+		}
 	}
 
 	private void openLoginPanel() {
@@ -75,9 +94,13 @@ public class Viewer {
 		}
 	}
 
-	private Boolean isDarkMater() {
+	private Boolean isDarkMater(Boolean flag) {
 		try {
-			driver.findElement(By.cssSelector("img.float_left"));
+			if (flag) {
+				driver.findElement(By.cssSelector("img.float_left"));
+			} else {
+				driver.findElement(By.id("debris17"));
+			}
 			return true;
 		} catch (NoSuchElementException ex) {
 			return false;
@@ -86,5 +109,29 @@ public class Viewer {
 
 	private String prepareToWrite(Integer gal, Integer ss) {
 		return gal + ":" + ss;
+	}
+
+	public String getLogin() {
+		return login;
+	}
+
+	public void setLogin(String login) {
+		this.login = login;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getUniverse() {
+		return universe;
+	}
+
+	public void setUniverse(String universe) {
+		this.universe = universe;
 	}
 }
