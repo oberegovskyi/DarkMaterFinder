@@ -99,7 +99,7 @@ public class Viewer {
 			if (flag) {
 				driver.findElement(By.cssSelector("img.float_left"));
 			} else {
-				driver.findElement(By.id("debris17"));
+				driver.findElement(By.id("planet17"));
 			}
 			return true;
 		} catch (NoSuchElementException ex) {
